@@ -1,5 +1,6 @@
 ## angular2 playground app (beta 1)
-An example Angular 2 project.
+An example Angular 2 learning project.
+
 #### Themes covered
  - Components communication
  - Http service extending
@@ -13,11 +14,16 @@ An example Angular 2 project.
  - [mongodb](https://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/)
  
 #### Installation
- - npm install
- - bower install
- !!! Important !!!
- Sample app uses big db with almost 10000 records. Ther is dump folder, so just run
-     mongorestore --db playground dump/playground
-     
-#### Run
-    gulp
+```bash
+npm install
+bower install
+```
+ **!!! Important !!!**
+    Sample app uses big db with almost 10000 records. Project contains db dump, so just run
+```bash
+mongorestore --db playground dump/playground
+```     
+#### Start
+```bash
+gulp
+```
