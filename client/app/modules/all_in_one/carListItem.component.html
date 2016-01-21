@@ -1,0 +1,23 @@
+<div class="row">
+    <a [routerLink]="['Details', { id: car._id }]" class="link">
+        <div class="col-md-3">
+            <img class="img-thumbnail" [src]="car.images[0]" alt="" style="width:160px;">
+        </div>
+        <div class="col-md-9">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="headline-block">
+                        <span>{{car.manufacter}}</span>
+                        <span>{{car.name}}</span>
+                        <span>{{car.description}}</span>
+                        <p><small>{{car.milage}} km</small></p>
+                        <p><small>{{car.year}}</small></p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <p class="text-right"><strong>{{car.price | currency:'EUR' }}</strong></p>
+                </div>
+            </div>
+        </div>
+    </a>
+</div>

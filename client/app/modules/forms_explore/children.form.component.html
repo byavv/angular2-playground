@@ -1,0 +1,100 @@
+ <div class="control-container">  
+     <div class="row">
+         <div class="col-md-10 col-sm-10 col-xs-10">
+           <div *ngFor="#child of children, #i=index" class="child" [class.disabled]="disabled"> 
+                <span (click)=edit(i)>{{child.name}}, {{child.age}}</span>
+                                        
+                <button type="button" (click)="delete(i)" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+           </div>
+        </div>
+        <div class="col-md-2 col-sm-2 col-xs-2">
+             <button type="button" (click)="add()" [disabled]="disabled" class="btn btn-primary pull-right">
+                 <i class="glyphicon glyphicon-plus"></i>
+             </button>
+        </div> 
+     </div>      
+        <div class="row form-container" [hidden]="!opened||disabled">
+             <form [ngFormModel]="childForm" #f="ngForm">   
+             <div class="col-md-12">        
+                <div class="form-group">   
+                      
+                   <!-- IT DOES NOT WORK AS EXPECTED YET (issue #4285) -->   
+                    
+                   <!-- This is how it should be -->     
+                          
+                   <!-- <label class="radio-inline">
+                        <input type="radio"
+                        value="male" 
+                        ngControl="gender"
+                        [(ngModel)]="child.gender"                        
+                        name="gender">Male</label>                   
+               
+                    <label class="radio-inline">
+                        <input type="radio"
+                        value="female" 
+                        ngControl="gender"                        
+                        [(ngModel)]="child.gender"                         
+                        name="gender">Female</label>     -->                     
+                      
+                    <!-- This is a hack -->  
+                      
+                    <label class="radio-inline">
+                        <input type="radio"
+                        value="male" 
+                        #male                        
+                        (click)="child.gender = male.value"                        
+                        name="gender">Male</label>                   
+               
+                    <label class="radio-inline">
+                        <input type="radio"
+                        value="female"
+                        #female                                                
+                        (click)="child.gender = female.value"                        
+                        name="gender">Female</label>
+                </div>
+            </div>
+            <!--  <div class="col-md-8" [class.has-error]="!nameControl.valid && submitted">  -->
+               <div class="col-md-8" > 
+                <div class="form-group">
+                    <label for="name">Name</label>
+                     <input type="text" 
+                        class="form-control"                        
+                        #name="ngForm" 
+                        placeholder="Enter child name.."
+                        ngControl="name"
+                        [(ngModel)]="child.name"                         
+                        id="name">                        
+                     <div *ngIf="nameControl.hasError('required') && submitted">
+                        Name field is required
+                    </div>               
+                </div>
+            </div>
+            <div class="col-md-4">
+                <!-- <div class="form-group" [class.has-error]="!ageControl.valid && submitted">-->
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="number"
+                        class="form-control"
+                        #age="ngForm" 
+                        ngControl="age" 
+                        [(ngModel)]="child.age" 
+                        name="age"  
+                        min="0"                                      
+                        id="age">
+                    <div *ngIf="!ageControl.valid && submitted">
+                       Age is wrong
+                    </div>
+                </div>
+            </div> 
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <button [hidden]="editMode" class="btn btn-primary" (click)="onAdd(f.value)">Apply</button>
+                    <button [hidden]="!editMode" class="btn btn-primary" (click)="onUpdate(f.value)">Update</button>
+                    <button class="btn btn-primary" (click)="cancel()">Cancel</button>
+                </div>                
+            </div>           
+        </form>
+     </div>        
+</div>

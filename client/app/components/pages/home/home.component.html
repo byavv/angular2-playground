@@ -1,0 +1,26 @@
+<div class='row'>
+    <div class='col-md-2'>
+        <span>Basic</span>
+        <div class="list-group">
+            <a [routerLink]="['Communication']" class="list-group-item">Communication</a>
+            <a [routerLink]="['Forms']" class="list-group-item">Forms explore</a>
+            <a [routerLink]="['Http']" class="list-group-item">Http</a>
+            <a [routerLink]="['Router']" class="list-group-item">Router</a>
+            <a [routerLink]="['Rx']" class="list-group-item">Autocomplete (Rx)</a>
+        </div>
+        <br/>
+        <span>Experimental</span>
+        <div class="list-group">
+            <a [routerLink]="['Polymer']" class="list-group-item">Polymer integration</a>
+        </div>
+        <br/>
+        <span>Complex</span>
+        <div class="list-group">
+            <a [routerLink]="['All']" class="list-group-item">Simple cars online market</a>
+        </div>
+    </div>
+    <div class='col-md-10'>
+        <router-outlet>
+        </router-outlet>
+    </div>
+</div>

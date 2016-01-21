@@ -1,0 +1,377 @@
+<link rel="import" href="/vendor/polymer/polymer.html">
+<link rel="import" href="/vendor/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="/vendor/paper-button/paper-button.html">
+<link rel="import" href="/vendor/paper-menu/paper-menu.html">
+<link rel="import" href="/vendor/paper-item/paper-item.html">
+<link rel="import" href="/vendor/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="/vendor/paper-icon-button/paper-icon-button.html">
+
+<dom-module id="stock-graph">
+    <template>
+        <style>
+            .inline-stockline {
+                vertical-align: middle;
+                position: relative;
+            }
+            
+            #stockline {
+                vertical-align: middle;
+            }
+            
+            :host {
+                display: block;
+                height: 100%;
+            }
+            
+            :root {
+                --paper-item-min-height: 15px;
+                --iron-icon-stroke-color: none;
+                --iron-icon-fill-color: #868585;
+            }
+            
+            ::content .month-menu {
+                width: 20px;
+                height: 20px;
+                padding: 0px 0;
+            }
+            
+            ::content #menu {
+                float: right;
+                margin: 0 0 -8px 0;
+                width: 60px;
+            }
+            
+            ::content .last {
+                fill: #0F1379;
+            }
+            
+            ::content .axis path,
+            ::content .axis line {
+                fill: none;
+                stroke: #C5C5C5;
+                shape-rendering: crispEdges;
+            }
+            
+            ::content .xCross,
+            ::content .yCross {
+                stroke: #656565;
+                stroke-dasharray: 2.3;
+                stroke-width: 0.5px;
+            }
+            
+            ::content svg text {
+                font-size: 10px;
+                font-weight: normal;
+                font-family: sans-serif;
+                fill: #868585;
+            }
+            
+            ::content svg .arc {
+                fill: rgba(15, 19, 121, 0.6);
+            }
+            
+            ::content svg .curve {
+                stroke: rgba(15, 19, 121, 0.8);
+                fill: none;
+                stroke-width: 0.5px;
+            }
+            
+            ::content .focus circle {
+                fill: rgba(0, 0, 255, 0.3);
+                stroke: rgba(15, 19, 121, 0.8);
+            }
+            
+            ::content .overlay {
+                fill: none;
+                pointer-events: all;
+            }
+        </style>
+
+        <div class="inline-stockline">
+            <div style="float:left; margin-top: 30px">
+                <strong style="margin-right:5px;">
+                     [[symbol]]
+                </strong>
+                <span>
+                     [[lastClose]]
+                </span>
+            </div>
+            <paper-dropdown-menu id="menu" label="Months" disabled="{{!initialized}}">
+                <paper-menu id="paperMenu" class="dropdown-content" attr-for-selected="count" selected=[[months]]>
+                    <paper-item count="6">6</paper-item>
+                    <paper-item count="12">12</paper-item>
+                </paper-menu>
+            </paper-dropdown-menu>
+            <svg id="stockline" width$="{{width}}" height$="{{height}}">
+            </svg>
+        </div>
+
+    </template>
+
+    <script>
+        var Loader = (function() {
+            this.config = {};
+            this.timer = {};
+            this.arc = {};
+            function spin(selection, duration) {
+                selection.transition()
+                    .ease("linear")
+                    .duration(duration)
+                    .attrTween("transform", function() {
+                        return d3.interpolateString("rotate(0)", "rotate(360)");
+                    });
+                this.timer = setTimeout(function() { spin(selection, duration); }, duration);
+            }
+        
+            function transitionFunction(path) {
+                path.transition()
+                    .duration(7500)
+                    .attrTween("stroke-dasharray", tweenDash)
+                    .each("end", function() { d3.select(this).call(transition); });
+            }
+        
+            var cls = function(config) {
+                this.config = config;
+                this.start = function() {
+                    var radius = Math.min(this.config.width, this.config.height) / 6;
+                    var tau = 2 * Math.PI;
+                
+                    var arc = d3.svg.arc()
+                        .innerRadius(radius * 0.5)
+                        .outerRadius(radius * 0.7)
+                        .startAngle(0);
+                    
+                    this.arc = d3.select(this.config.container)
+                        .append("g")
+                        .attr("transform", "translate(" + this.config.width / 2 + "," + this.config.height / 2 + ")")
+                    
+                    this.arc.append("path")
+                        .datum({ endAngle: 0.33 * tau })
+                        .attr({
+                            d: arc,
+                            class: "arc"
+                        })
+                        .call(spin, 1500);
+                    
+                }
+                this.stop = function() {
+                    if (this.timer) {
+                        clearTimeout(this.timer);
+                    }
+                    this.arc.remove();
+                }
+            };
+            return cls;
+        })()
+        
+        function buildLine(el, width, height, data) {
+            var padding = 35;
+        
+            var svg = d3.select(el);
+            svg.selectAll("*").remove();
+        
+            var minDate = new Date(data[0].date);
+            var maxDate = new Date(data[data.length - 1].date)
+        
+            var xScale = d3.time.scale()
+                .range([padding, width - padding])
+                .domain([minDate, maxDate]);
+            var yScale = d3.scale
+                .linear()
+                .range([height - padding, padding]).nice(d3.time.year)
+                .domain(d3.extent(data, function(d) { return d.close; }));
+            
+            var yAxis = d3.svg.axis().scale(yScale).orient("left").ticks(3);
+            var xAxis = d3.svg.axis().scale(xScale).orient("bottom").tickFormat(d3.time.format("%b"));
+        
+            var lineFun = d3.svg.line()
+                .x(function(d) { return xScale(d.date); })
+                .y(function(d) { return yScale(d.close); })
+                .interpolate("linear");
+            
+            svg.append("path")
+                .datum(data)
+                .attr("d", lineFun)
+                .attr("class", "curve");
+            
+            svg.append("g").call(yAxis)
+                .attr({
+                    class: "axis",
+                    transform: "translate(" + padding + ", 0)"
+                });
+            svg.append("g").call(xAxis)
+                .attr({
+                    class: "axis",
+                    transform: "translate(0, " + (height - padding) + ")"
+                });
+            
+            svg.append("text")
+                .attr("x", "38px")
+                .attr("dy", "2.9em")
+                .style("text-anchor", "end")
+                .text("Price ($)");
+            
+            svg.append('circle')
+                .attr('class', 'last')
+                .attr('cy', yScale(data[data.length - 1].close))
+                .attr('cx', width - padding)
+                .attr('r', 2);
+            
+            var focus = svg.append("g")
+                .attr("class", "focus")
+                .style("display", "none");
+            
+            focus.append("circle")
+                .attr("r", 3.5);
+            
+            focus.append("text")
+                .attr("x", 9)
+                .attr("id", "value")
+                .attr("dy", "-12px");
+            focus.append("text")
+                .attr("x", -40)
+                .attr("id", "date")
+                .attr("dy", "-12px");
+            
+            var cross = svg.append("g")
+                .style("display", "none");
+            
+            cross.append("line")
+                .attr("class", "yCross")
+                .attr("y1", padding)
+                .attr("y2", height - padding);
+            
+            cross.append("line")
+                .attr("class", "xCross")
+                .attr("x1", padding)
+                .attr("x2", width - padding);
+            
+            svg.append("rect")
+                .attr("class", "overlay")
+                .attr("id", "overlay")
+                .attr("width", width)
+                .attr("height", height)
+                .on("mouseover", function() {
+                    focus.style("display", null);
+                    cross.style("display", null);
+                })
+                .on("mouseout", function() {
+                    focus.style("display", "none");
+                    cross.style("display", "none");
+                })
+                .on("mousemove", mousemove);
+            
+            var bisect = d3.bisector(function(d) { return d.date; }).left;
+        
+            function mousemove() {
+                var x0 = xScale.invert(d3.mouse(this)[0]);
+                var i = bisect(data, x0, 0, data.length - 1);
+                focus.attr("transform", "translate(" + xScale(data[i].date) + "," + yScale(data[i].close) + ")");
+                focus.select("text#value")
+                    .text(data[i].close);
+                
+                focus.select("text#date")
+                    .text(moment(data[i].date).format("MM/DD"));
+                
+                cross.select("line.yCross")
+                    .attr("x1", xScale(data[i].date))
+                    .attr("x2", xScale(data[i].date));
+                
+                cross.select("line.xCross")
+                    .attr("y1", yScale(data[i].close))
+                    .attr("y2", yScale(data[i].close));
+            }
+        }
+        
+        Polymer({
+            is: "stock-graph",
+            properties: {
+                width: { type: Number, value: 800 },
+                height: { type: Number, computed: "computeHeight(width, ratio)" },
+                months: { type: Number, value: 12, observer: 'onMonthChanged' },
+                symbol: { type: String, value: "", observer: 'onSymbolChanged' },
+                lastClose: { type: String },
+                data: { type: Array },
+                ratio: { type: Number, value: 4 },
+                initialized: { type: Boolean, value: false },
+            },
+        
+            computeHeight: function(width, ratio) {               
+                return width / ratio;
+            },
+            attached: function() {
+                var _this = this;
+                this.async(function() {
+                    window.addEventListener("resize", function() {
+                        _this.update();
+                    });
+                    this.$.paperMenu.addEventListener("iron-select", function(event) {
+                        _this.months = event.target.selected;
+                        _this.buildChart();
+                    });
+                    this.width = this.parentElement.getBoundingClientRect().width;
+                    this.buildChart();
+                });
+            },           
+            update: function(args) {
+                this.width = this.parentElement.getBoundingClientRect().width;
+                buildLine(this.$.stockline, this.width, this.height, this.data);              
+            },
+            onSymbolChanged: function(value) {
+                if (value && this.initialized)
+                    this.buildChart();
+            },
+            onMonthChanged: function(value) {
+                if (value && this.initialized)   // only when menu selection             
+                    this.buildChart();
+            },
+            updateChart: function(){
+                this.buildChart();
+            },
+            buildChart: function() {
+                if (!!this.symbol && !!this.months) {
+                    this.width = this.parentElement.getBoundingClientRect().width;                    
+                    var loader = new Loader({
+                        width: this.width,
+                        height: this.height,                       
+                        container: this.$.stockline,
+                        id: "loader"
+                    });
+                    if (this.$$("#overlay")) {
+                        this.$$("#overlay").style.fill = "white";
+                        this.$$("#overlay").style.opacity = "0.5";
+                    }
+                
+                    loader.start();
+                    var _this = this;
+                    var endDate = moment().format("YYYY-MM-DD");
+                    var startDate = moment().subtract(this.months, "months").format("YYYY-MM-DD");
+                
+                    var query = "select * from yahoo.finance.historicaldata where symbol in ('"
+                        + this.symbol + "')  and startDate = '" + startDate + "' and endDate = '"
+                        + endDate + "'";
+                    var url = "http://query.yahooapis.com/v1/public/yql?q=" + query + "&format=json&&env=http://datatables.org/alltables.env";
+                    d3.json(url, function(err, data) {
+                        if (!!data.query.results) {
+                            _this.data = data.query.results.quote
+                                .map(function(d) {
+                                    return {
+                                        date: d3.time.format("%Y-%m-%d").parse(d.Date),
+                                        close: +d.Close
+                                    }
+                                })
+                                .sort(function(a, b) {
+                                    return a.date - b.date;
+                                });
+                            _this.lastClose = _this.data[_this.data.length - 1].close;
+                            buildLine(_this.$.stockline, _this.width, _this.height, _this.data);                           
+                            loader.stop();
+                            _this.initialized = true;
+                            _this.fire("current", { last: _this.lastClose, symbol: this.symbol });
+                        }
+                    })
+                }
+            }
+        })
+    </script>
+</dom-module>

@@ -1,0 +1,235 @@
+<link rel="import" href="/vendor/polymer/polymer.html">
+
+<link rel="import" href="/vendor/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="/vendor/paper-input/paper-input-behavior.html">
+<link rel="import" href="/vendor/paper-input/paper-input-container.html">
+<link rel="import" href="/vendor/paper-input/paper-input-error.html">
+<link rel="import" href="/vendor/iron-input/iron-input.html">
+<link rel="import" href="/vendor/iron-form-element-behavior/iron-form-element-behavior.html">
+<link rel="import" href="/vendor/iron-icon/iron-icon.html">
+<link rel="import" href="/vendor/iron-ajax/iron-ajax.html">
+
+
+
+
+<dom-module id="email-input">
+
+    <style>
+        :host {
+            overflow: hidden;
+        }
+        ::content .control-error{
+            color: #db4437;
+            font-family: 'Roboto', 'Noto', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 12px;
+            font-weight: 400;
+            letter-spacing: 0.011em;
+            line-height: 20px;
+        }
+        
+        iron-icon {
+            --iron-icon-width: 24px;
+            --iron-icon-height: 24px;
+        }
+       
+        .icon-container {
+            margin-left: 5px;
+            height: 25px;
+        }
+        
+        ::content iron-icon.warn .iron-icon {
+            fill: #a3000a;
+        }
+        
+        ::content iron-icon.check .iron-icon {
+            fill: #267c1d;
+        }
+        ::content iron-icon.loading .iron-icon {
+            fill: grey;
+        }
+        
+        ::content .input-container {
+            @apply(--layout-horizontal);
+            position: relative;
+        }
+        
+        ::content input {
+            @apply(--layout-flex);
+        }
+        
+        paper-input-error {
+            display: block;
+        }
+    </style>
+
+    <template>
+
+        <paper-input-container id="container" on-core-activate="{{ onActivate }}"
+        disabled$="[[disabled]]" 
+        no-label-float="[[noLabelFloat]]" 
+        always-float-label="[[_computeAlwaysFloatLabel(alwaysFloatLabel,placeholder)]]"
+        invalid="[[invalid]]">
+            
+            <label hidden$="[[!label]]">[[label]]</label>
+
+            <div class="input-container">
+                <input is="iron-input" id="input" 
+                    aria-labelledby$="[[_ariaLabelledBy]]" 
+                    aria-describedby$="[[_ariaDescribedBy]]" 
+                    bind-value="{{proxyValue}}"
+                    type="[[type]]" 
+                    required$="[[required]]"                     
+                    prevent-invalid-input 
+                    name$="[[name]]"
+                    disabled$="[[disabled]]" 
+                    invalid="{{invalid}}" 
+                    autofocus$="[[autofocus]]" 
+                    inputmode$="[[inputmode]]" 
+                    placeholder$="[[placeholder]]"
+                    readonly$="[[readonly]]" 
+                    size$="[[size]]">
+                <div class="icon-container">
+                    <iron-icon id="icon" class$=[[mode]] icon="secured-icons:[[mode]]"></iron-icon>
+                </div>
+            </div>
+            <template is="dom-if" if="[[errorMessage]]">
+                <paper-input-error>[[errorMessage]]</paper-input-error>
+            </template>
+        </paper-input-container>
+         <template is="dom-if" if="[[body]]">
+            <iron-ajax id="ajax"
+                        auto
+                        url="[[checkUrl]]"
+                        method="POST"
+                        headers='{"Content-Type": "application/json"}'
+                        body='[[body]]'
+                        loading={{loading}}
+                        last-response="{{ajaxResponse}}"                   
+                        handle-as="json"
+                        on-response="handleResponse"
+                        debounce-duration="500">
+            </iron-ajax>
+          </template>
+    </template>
+
+    <script>  
+    
+      (function() {
+          Polymer({
+            is: 'email-input',
+            behaviors: [
+              Polymer.PaperInputBehavior,
+              Polymer.IronFormElementBehavior,
+            ],
+            observers: [
+              '_onFocusedChanged(focused)'
+            ],
+            properties: {
+                  
+              label: {
+                type: String,
+                value: 'Email'
+              },
+              checkUrl:{
+                type: String,                
+              },
+              mode: {
+                  type: String,
+                  value: 'default'
+              },
+              showError: {
+                  type: Boolean,          
+              },  
+              body:{
+                  type:Object,
+                  value: null                  
+              },        
+              value: {
+                  type: String                  
+              },
+              proxyValue:{
+                  type: String,
+                  observer:'_onInput'  
+              },
+              ajaxResponse: {
+                  type: Object
+              },
+              loading:{
+                  type: Boolean,
+                  observer:"_onLoading"
+              }     
+            }, 
+             ready: function() {   
+                console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                if (this.value){
+                    this.proxyValue = this.value;
+                    this.validate();
+                }                    
+            },
+                       
+            handleResponse: function(){
+              if(!this.ajaxResponse){
+                 return;
+              }
+              if(this.ajaxResponse.equal){
+                  this.value=this.proxyValue;
+                  this._drawState("check");
+                  this._setValidState(true);                                                                      
+              }else{
+                  this._setValidState(false,"Email is not uniq")
+                  this._drawState("warn");
+                  this.value = '';                                
+              }
+              this.fire("input",this.value);
+            },
+            _onInput: function(value){                
+                this.validate();
+            }, 
+            _setValidState: function(valid, error){
+              this.errorMessage = error;
+              this.$.container.invalid = !valid;
+              this.$.container.updateAddons({
+                  inputElement: this.$.input,
+                  value: this.value,
+                  invalid: !valid
+              });
+            },           
+            validate: function() {          
+               if (!this.required && this.proxyValue == '') {
+                   return true;
+               }                  
+               var valid = true;
+               if(!/.+\@.+\..+/.test(this.proxyValue)){                   
+                   this._setValidState(false, "Email " + this.proxyValue +" is not valid email address");
+                   valid = false;
+               }else{
+                   this.body = {email: this.proxyValue}
+               }                
+               return valid;                                               
+            },            
+            _drawState: function(mode){
+                 this.mode = mode;
+            },
+            _onFocusedChanged: function(focused) {
+              if (!focused&& this.proxyValue != undefined) {
+                this.validate();
+              }
+            },
+            _onLoading: function(value){
+                if(value){
+                    this._drawState("loading");
+                    this.fire("input","");
+                }                    
+            },
+            onActivate: function(){
+                console.log("activated")
+            }
+          })
+        })();
+        
+    </script>
+</dom-module>

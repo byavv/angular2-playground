@@ -1,0 +1,21 @@
+<div class="sb-search">
+    <div [ngClass]="{opened:opened}" #sbSearch>
+        <form>
+            <input class="sb-search-input" [(ngModel)]="seachTextModel" [(ngFormControl)]="seachText" placeholder="Search..." type="search"
+            name="search" id="search">
+            <input class="sb-search-submit" type="submit">
+            <span class="sb-icon-search" (click)="toggleControlState(opened = !opened)">
+                        <i class="fa fa-search"></i>
+            </span>
+        </form>
+    </div>
+    <div class="sb-message" *ngIf="!!message && !!seachTextModel"><span>{{message}}</span></div>
+    <!--Seach results-->
+    <div class="sb-seachresults" #sbSearchResults [ngClass]="{hidden:results.length === 0}">
+        <ul class="sb-results-dropdown-menu">
+            <li *ngFor="#result of results" (click)="resutSelected(result)" class="seach-result-item">
+                <span>{{result.name|uppercase}}</span>
+            </li>
+        </ul>
+    </div>
+</div>

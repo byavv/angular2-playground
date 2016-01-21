@@ -1,0 +1,28 @@
+{
+  "env": {
+    "NODE_ENV": "development"
+  },
+  "ext": "js ts less sass html",
+  "restartable": "rs",
+  "ignore": [
+    ".git",
+    "node_modules/**/node_modules",
+    "/build/*.*",
+    "/.idea/*.*",
+    "/test/*.*",
+    "gulpfile.js",
+    "*.json",
+    "/coverage"
+  ],
+  "verbose": true,
+  "execMap": {
+    "js": "node"
+  },  
+  "watch": [
+    "client/**/*.ts",
+    "client/**/*.less",
+    "client/**/*.sass",
+    "server/**/*.js",
+    "*.js"
+  ]
+}

@@ -1,0 +1,22 @@
+<section>
+    <div class="col-md-12">
+        <div class="col-md-6">
+            <img style="max-width:100%; width:400px; height: 300px;" [src]="car?.images[0]" alt="Car">
+        </div>
+        <div class="col-md-6">
+            <p><strong>{{car.name}}</strong></p>
+            <p>{{car.description}}</p>
+            <p><strong>{{car.price | currency:'EUR' }}</strong></p>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="col-md-6">            
+            <p>Milage: <strong>{{car.milage}} km</strong></p>
+            <p>First registration: <strong>{{car.year}}</strong></p>
+        </div>
+        <div class="col-md-6">
+            <p>Gear: <strong>{{car.gear}}</strong></p>
+            <p>Engine: <strong>{{car.engine}}</strong></p>           
+        </div>
+    </div>
+</section>
