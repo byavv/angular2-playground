@@ -11,7 +11,7 @@ import {URLSearchParams, JSONP_PROVIDERS, Jsonp, Http} from 'angular2/http';
             <form class="form-inline" [ngFormModel]="form" (ngSubmit)="onSubmit(form.value)">
                 <div class="form-group">
                     <label for="count">Per page</label>
-                    <input type="number" min="10" class="form-control" id="count" 
+                    <input type="number" min="5" class="form-control" id="count" 
                         [(ngModel)]="perPage" 
                         ngControl="perPage">
                 </div>
@@ -77,7 +77,7 @@ export class HooksComponent implements CanReuse, OnReuse, OnInit {
             searchTag: new Control()
         })
         this.currentPage = +this._routeParams.get("page") || 0;
-        this.perPage = +this._routeParams.get("perPage") || 20;
+        this.perPage = +this._routeParams.get("perPage") || 6;
         this.searchTag = this._routeParams.get("searchTag") || '';
     }
 
@@ -115,7 +115,7 @@ export class HooksComponent implements CanReuse, OnReuse, OnInit {
         search.set('format', 'json');
         return this.jsonp 
         
-            /*   .get('http://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=JSONP_CALLBACK', { search })
+               .get('http://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=JSONP_CALLBACK', { search })
                .map((response) => response.json())
                .map(result=> result.items)
                .map(result=> {
@@ -125,10 +125,10 @@ export class HooksComponent implements CanReuse, OnReuse, OnInit {
                            title: item.title
                        }
                    })
-               })*/               
+               })               
                
             // if you have a flickr api key, uncomment this code. It works much better.
-            .get('https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=74233effb558074e0175a128d7d4aa4b&privacy_filter=1&content_type=1&extras=url_m&format=json&jsoncallback=JSONP_CALLBACK', { search })
+         /*   .get('https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=xxxxxxYOURAPIKEYxxxxxx&privacy_filter=1&content_type=1&extras=url_m&format=json&jsoncallback=JSONP_CALLBACK', { search })
             .map((response) => response.json())
             .map(result=> result.photos)
             .map(result=> {
@@ -138,7 +138,9 @@ export class HooksComponent implements CanReuse, OnReuse, OnInit {
                         title: item.title
                     }
                 })
-            })
+            })*/
+            
+            
             .subscribe((items) => {
                 this.images = items;
                 var total = items.length / this.perPage;
