@@ -13,10 +13,7 @@ gulp.task('clean:build', () => {
   return (require('del'))('./build');
 });
 gulp.task("images", ["clean:build"], () => {
-  return gulp.src("client/assets/images/*")
-    .pipe($.imagemin({
-      optimizationLevel: 4
-    }))
+  return gulp.src("client/assets/images/*")   
     .pipe(gulp.dest("build/images"));
 });
 // build for production
