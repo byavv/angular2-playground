@@ -29,3 +29,4 @@ mongorestore --db playground dump/playground
 ```bash
 gulp
 ```
+Open [http://localhost:3030](http://localhost:3030)
