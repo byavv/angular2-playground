@@ -12,6 +12,7 @@ An example Angular 2 learning project.
  
 #### Requirements
  - [mongodb](https://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/)
+ - nodemon
  
 #### Installation
 ```bash
