@@ -95,102 +95,99 @@
 </dom-module>
 
 <script>
-    Polymer({
-        is: "pd-select",
-        behaviors: [
-            Polymer.IronButtonState,
-            Polymer.IronControlState,
-            Polymer.IronFormElementBehavior,
-            Polymer.IronValidatableBehavior                 
-        ],
-        properties: {
-            selectedItem: {
-                type: Object,
-                notify: true,
-                readOnly: true
-            },
-            selectedItemLabel: {
-                type: String,
-                notify: true,
-                readOnly: true
-            },            
-            errorMessage: {
-                type: String                
-            },
-            /*required: {
-                type: Boolean                
-            },*/
-			options:{
-                type:Array,
-                notify: true,
-                reflectToAttribute: true
-            },
-            label:{
-                type:String,
-                value:"",
-                reflectToAttribute:true
-            },
-            value:{
-                type:String,
-                value:"",
-                notify:true                           
-            },           
-            selectToggled:{
-                type:Boolean,
-                value:false,
-                notify:true
-            },          
-            opened: {
-                type: Boolean,
-                notify: true,
-                value: false,
-                observer: 'toggle'
-            },        
+Polymer({
+    is: "pd-select",
+    behaviors: [
+        Polymer.IronButtonState,
+        Polymer.IronControlState,
+        Polymer.IronFormElementBehavior,
+        Polymer.IronValidatableBehavior
+    ],
+    properties: {
+        selectedItem: {
+            type: Object,
+            notify: true,
+            readOnly: true
         },
-        observers: [
-          '_selectedItemChanged(selectedItem)'         
-        ],       
-        attached: function() {
-            this.async(function() {
-                if(this.value){
-                    this._setSelectedItemLabel(this.value);
-                    this.validate();                                       
-                }
-            });
-        },             
-        _onIronSelect: function(event) {
-          this._setSelectedItem(event.detail.item);
-        },       
-        _onIronDeselect: function(event) {
-          this._setSelectedItem(null);         
+        selectedItemLabel: {
+            type: String,
+            notify: true,
+            readOnly: true
         },
-        _selectedItemChanged: function(selectedItem) {
-          var value = '';
-          if (!selectedItem) {
+        errorMessage: {
+            type: String
+        },
+        options: {
+            type: Array,
+            notify: true,
+            reflectToAttribute: true
+        },
+        label: {
+            type: String,
+            value: "",
+            reflectToAttribute: true
+        },
+        value: {
+            type: String,
+            value: "",
+            notify: true
+        },
+        selectToggled: {
+            type: Boolean,
+            value: false,
+            notify: true
+        },
+        opened: {
+            type: Boolean,
+            notify: true,
+            value: false,
+            observer: 'toggle'
+        },
+    },
+    observers: [
+        '_selectedItemChanged(selectedItem)'
+    ],
+    attached: function () {
+        this.async(function () {
+            if (this.value) {
+                this._setSelectedItemLabel(this.value);
+                this.validate();
+            }
+        });
+    },
+    _onIronSelect: function (event) {
+        this._setSelectedItem(event.detail.item);
+    },
+    _onIronDeselect: function (event) {
+        this._setSelectedItem(null);
+    },
+    _selectedItemChanged: function (selectedItem) {
+        var value = '';
+        if (!selectedItem) {
             value = '';
-          } else {
+        } else {
             value = selectedItem.getAttribute('data-select') || selectedItem.textContent.trim();
-          }
-          if(this.value != value){
-               this.value = value;
-               this._setSelectedItemLabel(value);
-               this.fire("input", this.value);
-          }     
-          this.validate();            
-        }, 
-        _computeMenuVerticalOffset: function(noLabelFloat) {          
-          return noLabelFloat ? -4 : 8;
-        },          
-        toggle:function(){           
-            this.selectToggled = !this.selectToggled;           
-            this.$.dropmenu.setAttribute('aria-expanded', this.selectToggled);               
-        },
-        validate: function(){
-            this.invalid = false;
-            if(this.$.input.required && !this.$.input.value){
-                this.invalid = true;
-            }           
-        }                
-    });
+        }
+        if (this.value != value) {
+            this.value = value;
+            this._setSelectedItemLabel(value);
+            this.fire("input", this.value);
+        }
+        this.validate();
+    },
+    _computeMenuVerticalOffset: function (noLabelFloat) {
+        return noLabelFloat ? -4 : 8;
+    },
+    toggle: function () {
+        this.selectToggled = !this.selectToggled;
+        this.$.dropmenu.setAttribute('aria-expanded', this.selectToggled);
+    },
+    validate: function () {
+        this.invalid = false;
+        if (this.$.input.required && !this.$.input.value) {
+            this.invalid = true;
+        }
+    }
+});
 
 </script>

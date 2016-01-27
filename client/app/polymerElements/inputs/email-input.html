@@ -118,118 +118,117 @@
 
     <script>  
     
-      (function() {
-          Polymer({
-            is: 'email-input',
-            behaviors: [
-              Polymer.PaperInputBehavior,
-              Polymer.IronFormElementBehavior,
-            ],
-            observers: [
-              '_onFocusedChanged(focused)'
-            ],
-            properties: {
-                  
-              label: {
+(function () {
+    Polymer({
+        is: 'email-input',
+        behaviors: [
+            Polymer.PaperInputBehavior,
+            Polymer.IronFormElementBehavior,
+        ],
+        observers: [
+            '_onFocusedChanged(focused)'
+        ],
+        properties: {
+
+            label: {
                 type: String,
                 value: 'Email'
-              },
-              checkUrl:{
-                type: String,                
-              },
-              mode: {
-                  type: String,
-                  value: 'default'
-              },
-              showError: {
-                  type: Boolean,          
-              },  
-              body:{
-                  type:Object,
-                  value: null                  
-              },        
-              value: {
-                  type: String                  
-              },
-              proxyValue:{
-                  type: String,
-                  observer:'_onInput'  
-              },
-              ajaxResponse: {
-                  type: Object
-              },
-              loading:{
-                  type: Boolean,
-                  observer:"_onLoading"
-              }     
-            }, 
-             ready: function() {   
-                console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                if (this.value){
-                    this.proxyValue = this.value;
-                    this.validate();
-                }                    
             },
-                       
-            handleResponse: function(){
-              if(!this.ajaxResponse){
-                 return;
-              }
-              if(this.ajaxResponse.equal){
-                  this.value=this.proxyValue;
-                  this._drawState("check");
-                  this._setValidState(true);                                                                      
-              }else{
-                  this._setValidState(false,"Email is not uniq")
-                  this._drawState("warn");
-                  this.value = '';                                
-              }
-              this.fire("input",this.value);
+            checkUrl: {
+                type: String,
             },
-            _onInput: function(value){                
-                this.validate();
-            }, 
-            _setValidState: function(valid, error){
-              this.errorMessage = error;
-              this.$.container.invalid = !valid;
-              this.$.container.updateAddons({
-                  inputElement: this.$.input,
-                  value: this.value,
-                  invalid: !valid
-              });
-            },           
-            validate: function() {          
-               if (!this.required && this.proxyValue == '') {
-                   return true;
-               }                  
-               var valid = true;
-               if(!/.+\@.+\..+/.test(this.proxyValue)){                   
-                   this._setValidState(false, "Email " + this.proxyValue +" is not valid email address");
-                   valid = false;
-               }else{
-                   this.body = {email: this.proxyValue}
-               }                
-               return valid;                                               
-            },            
-            _drawState: function(mode){
-                 this.mode = mode;
+            mode: {
+                type: String,
+                value: 'default'
             },
-            _onFocusedChanged: function(focused) {
-              if (!focused&& this.proxyValue != undefined) {
-                this.validate();
-              }
+            showError: {
+                type: Boolean,
             },
-            _onLoading: function(value){
-                if(value){
-                    this._drawState("loading");
-                    this.fire("input","");
-                }                    
+            body: {
+                type: Object,
+                value: null
             },
-            onActivate: function(){
-                console.log("activated")
+            value: {
+                type: String
+            },
+            proxyValue: {
+                type: String,
+                observer: '_onInput'
+            },
+            ajaxResponse: {
+                type: Object
+            },
+            loading: {
+                type: Boolean,
+                observer: "_onLoading"
             }
-          })
-        })();
+        },
+        ready: function () {
+            if (this.value) {
+                this.proxyValue = this.value;
+                this.validate();
+            }
+        },
+
+        handleResponse: function () {
+            if (!this.ajaxResponse) {
+                return;
+            }
+            if (this.ajaxResponse.equal) {
+                this.value = this.proxyValue;
+                this._drawState("check");
+                this._setValidState(true);
+            } else {
+                this._setValidState(false, "Email is not uniq")
+                this._drawState("warn");
+                this.value = '';
+            }
+            this.fire("input", this.value);
+        },
+        _onInput: function (value) {
+            this.validate();
+        },
+        _setValidState: function (valid, error) {
+            this.errorMessage = error;
+            this.$.container.invalid = !valid;
+            this.$.container.updateAddons({
+                inputElement: this.$.input,
+                value: this.value,
+                invalid: !valid
+            });
+        },
+        validate: function () {
+            if (!this.required && this.proxyValue == '') {
+                return true;
+            }
+            var valid = true;
+            if (!/.+\@.+\..+/.test(this.proxyValue)) {
+                this._setValidState(false, "Email " + this.proxyValue + " is not valid email address");
+                valid = false;
+            } else {
+                this.body = { email: this.proxyValue }
+            }
+            return valid;
+        },
+        _drawState: function (mode) {
+            this.mode = mode;
+        },
+        _onFocusedChanged: function (focused) {
+            if (!focused && this.proxyValue != undefined) {
+                this.validate();
+            }
+        },
+        _onLoading: function (value) {
+            if (value) {
+                this._drawState("loading");
+                this.fire("input", "");
+            }
+        },
+        onActivate: function () {
+            console.log("activated")
+        }
+    })
+})();
         
     </script>
 </dom-module>
