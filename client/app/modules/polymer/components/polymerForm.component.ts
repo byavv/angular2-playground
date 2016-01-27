@@ -8,7 +8,6 @@ import {ROUTER_DIRECTIVES, OnReuse, CanReuse, ComponentInstruction} from 'angula
      <div class="row"> 
         <div  style="display: flex;">
             <form [ngFormModel]="loginForm" #f="ngForm" style="width: 500px; max-width: 80%; margin: auto;">
-              
                 <email-input 
                     label="Email" 
                     #email="ngForm" 
@@ -17,11 +16,8 @@ import {ROUTER_DIRECTIVES, OnReuse, CanReuse, ComponentInstruction} from 'angula
                     [checkUrl]= "'/api/checkEmail'"
                     ngDefaultControl 
                     required>
-                </email-input>   
-                           
-                <div ngControlGroup="password">
-                
-                    <!--CUSTOM ELEMENT-->
+                </email-input> 
+                <div ngControlGroup="password">                                   
                     <password-input label="Password" type="password" 
                         #password="ngForm"                                               
                         ngControl='password' 
@@ -29,8 +25,7 @@ import {ROUTER_DIRECTIVES, OnReuse, CanReuse, ComponentInstruction} from 'angula
                         ngDefaultControl
                         [showError]="submitted"      
                         required>                           
-                    </password-input>     
-                    
+                    </password-input> 
                     <confirm-password-input 
                         label="Confirm password"                         
                         type="password"
@@ -40,10 +35,8 @@ import {ROUTER_DIRECTIVES, OnReuse, CanReuse, ComponentInstruction} from 'angula
                         [showError]="submitted" 
                         ngDefaultControl 
                         required>                                        
-                    </confirm-password-input> 
-                  
-                </div>
-                
+                    </confirm-password-input>                   
+                </div>                
                  <pd-select floatingLabel="true" 
                     label="Gender" 
                     [options]='genderOptions' 
@@ -54,8 +47,7 @@ import {ROUTER_DIRECTIVES, OnReuse, CanReuse, ComponentInstruction} from 'angula
                     error-message="Gender select is required"
                     ngDefaultControl>
                 </pd-select> 
-                <paper-button raised (click)="onSubmit(f.value)" [disabled]="(!f.valid) || (password.confirm != password.password)">Submit</paper-button>
-        
+                <paper-button raised (click)="onSubmit(f.value)" [disabled]="(!f.valid) || (password.confirm != password.password)">Submit</paper-button>        
             </form>            
         </div>
      </div>
@@ -64,7 +56,7 @@ import {ROUTER_DIRECTIVES, OnReuse, CanReuse, ComponentInstruction} from 'angula
 
 })
 
-export class PolymerFormComponent implements OnReuse, CanReuse  {
+export class PolymerFormComponent {
     loginForm: ControlGroup;
     _mp: string;
     password: any = {
@@ -75,9 +67,9 @@ export class PolymerFormComponent implements OnReuse, CanReuse  {
     gender: string;
     submitted: boolean;
 
-    constructor(fbuilder: FormBuilder) {        
+    constructor(fbuilder: FormBuilder) {
         this.submitted = false;
-        this.loginForm = fbuilder.group({           
+        this.loginForm = fbuilder.group({
             email: ['', Validators.compose([Validators.required, _emailValidator])],
             password: fbuilder.group({
                 password: ['', Validators.compose([Validators.required, Validators.minLength(6)])],
@@ -90,12 +82,7 @@ export class PolymerFormComponent implements OnReuse, CanReuse  {
         console.log(formValue);
         this.submitted = true;
     }
-    routerCanReuse(next: ComponentInstruction, prev: ComponentInstruction) { 
-        return false; 
-    }
-    routerOnReuse(next: ComponentInstruction, prev: ComponentInstruction) {
-        console.log("REUSE ME")
-    }
+
     getError(controlName) {
         if (this.loginForm.controls['controlName'].hasError("required")) {
             console.log(this.loginForm);
