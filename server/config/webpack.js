@@ -46,7 +46,19 @@ module.exports = function (mode) {
                 { test: /\.(png|jpg)$/, loader: "url?limit=25000" },
                 { test: /\.jpe?g$|\.gif$|\.png$|\.wav$|\.mp3$|\.otf$/, loader: "file" },
                 { test: /\.(ttf|eot|svg|woff|woff2)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "file" },
-                { test: /\.ts$/, loader: 'ts' }
+                {
+                    test: /\.ts$/,
+                    loader: 'ts-loader',
+                    exclude: ['node_modules'],
+                    query: {
+                        ignoreDiagnostics: [
+                            2403, // 2403 -> Subsequent variable declarations
+                            2300, // 2300 -> Duplicate identifier
+                            2374, // 2374 -> Duplicate number index signature
+                            2375, // 2375 -> Duplicate string index signature
+                        ]
+                    },
+                }
             ],
             postLoaders: [],
         },

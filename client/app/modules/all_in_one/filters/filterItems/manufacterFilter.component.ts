@@ -72,7 +72,7 @@ export class ManufacterFilterComponent implements AfterViewInit {
     opened: boolean = false;
     valueView: string;
     oldValue: any;
-    subscription: rx.Subscription<any>;
+    subscription: rx.Subscription;
 
     constructor(private apiService: ApiService) {
         this.manufacter = new Control(this.filterValue.manufacter);
