@@ -1,6 +1,6 @@
-/node_modules
+node_modules
 .vscode
-/build
-/client/vendor
+build
+client/vendor
 npm-debug.log
-/coverage/
+typings

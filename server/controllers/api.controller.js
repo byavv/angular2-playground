@@ -25,7 +25,7 @@ function _createFilterQuery(request) {
     if (request.priceFrom) {
         countQuery.where("price").gte(parseInt(request.priceFrom));
     }
-    if (request.colors && request.colors.length > 0) {       
+    if (request.colors && request.colors.length > 0) {
         countQuery.where("color").in(request.colors);
     }
     if (request.priceUp) {
@@ -98,8 +98,8 @@ module.exports = {
             return res.status(200).send({ count: count });
         })
     },
-    
-    seachCars: function (req, res, next) {       
+
+    seachCars: function (req, res, next) {
         var query = _createFilterQuery(req.body);
 
         query.exec().then((count) => {

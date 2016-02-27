@@ -19,6 +19,7 @@ An example Angular 2 learning project.
 ```bash
 npm install
 bower install
+typings install
 ```
  **!!! Important !!!**
     Sample app uses big db with almost 10000 records. Project contains db dump, so just run
