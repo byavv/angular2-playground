@@ -1,4 +1,4 @@
-## angular2 playground app (beta 7)
+## angular2 playground app (beta 8)
 An example Angular 2 learning project.
 
 #### Themes covered
