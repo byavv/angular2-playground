@@ -1,6 +1,7 @@
 <section class="jumbotron">
     <div class="row">
-        <form (submit)="submit()" class="inline-form">
+         <!--  <form class="inline-form">-->
+      <form (ngSubmit)="submit()" class="inline-form"> 
             <div class="col-md-3">
                 <div class="form-group">
                     <label for="manufacter">Made by</label>
@@ -38,7 +39,11 @@
                 </div>
             </div>
             <div class="col-md-2">
+               
                 <button class="btn btn-default">Show {{carCount}}</button>
+                <!--
+                  <button type="submit" (click)="submit()" class="btn btn-default">Show {{carCount}}</button>
+                   -->
             </div>
         </form>
     </div>
