@@ -90,7 +90,7 @@ export class ChildrenForm implements ControlValueAccessor {
         this.submitted = true;
         if (this.childForm.valid) {
             // Sould be so, but radio input does not reflect here
-            // this.children.push(value);  <--------------------
+           //  this.children.push(value); // <--------------------
             // !!!!!!!!! Temporal until #4285 is solved
             this.children.push(this.child);
             // todo: remove op above and use form value, not model

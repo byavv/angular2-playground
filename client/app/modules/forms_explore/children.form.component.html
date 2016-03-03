@@ -23,36 +23,42 @@
                    <!-- IT DOES NOT WORK AS EXPECTED YET (issue #4285) -->   
                     
                    <!-- This is how it should be -->     
-                          
-                   <!-- <label class="radio-inline">
+                                           
+                   <!--
+                     <label class="radio-inline">
                         <input type="radio"
                         value="male" 
                         ngControl="gender"
-                        [(ngModel)]="child.gender"                        
+                        [(ngModel)]="child.gender"               
                         name="gender">Male</label>                   
                
                     <label class="radio-inline">
                         <input type="radio"
                         value="female" 
-                        ngControl="gender"                        
+                        ngControl="gender"
                         [(ngModel)]="child.gender"                         
-                        name="gender">Female</label>     -->                     
-                      
+                        name="gender">Female</label>
+                   -->   
+                   
                     <!-- This is a hack -->  
                       
-                    <label class="radio-inline">
+                 <label class="radio-inline">
                         <input type="radio"
                         value="male" 
-                        #male                        
-                        (click)="child.gender = male.value"                        
+                        #male
+                        ngControl="gender"
+                        [checked]="child.gender === 'male'"
+                        (click)="child.gender = male.value"
                         name="gender">Male</label>                   
                
                     <label class="radio-inline">
                         <input type="radio"
+                        #female
+                        ngControl="gender"
                         value="female"
-                        #female                                                
-                        (click)="child.gender = female.value"                        
-                        name="gender">Female</label>
+                        [checked]="child.gender === 'female'" 
+                        (click)="child.gender = female.value" 
+                        name="gender">Female</label>   
                 </div>
             </div>
             <!--  <div class="col-md-8" [class.has-error]="!nameControl.valid && submitted">  -->
